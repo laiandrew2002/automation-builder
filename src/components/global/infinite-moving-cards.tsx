@@ -24,7 +24,7 @@ export const InfiniteMovingCards = ({
 
   useEffect(() => {
     addAnimation()
-  }, [])
+  }, []);
   
   const [start, setStart] = useState(false)
   function addAnimation() {
@@ -69,12 +69,12 @@ export const InfiniteMovingCards = ({
       }
     }
   }
-  console.log(items)
+
   return (
     <div
       ref={containerRef}
       className={cn(
-        'scroller relative z-20  max-w-7xl overflow-hidden  [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]',
+        'scroller relative z-20 max-w-7xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]',
         className
       )}
     >
