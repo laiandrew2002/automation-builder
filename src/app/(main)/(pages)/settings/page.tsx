@@ -3,70 +3,39 @@
 import ProfileForm from '@/components/forms/profile-form'
 import React from 'react'
 import ProfilePicture from './_components/profile-picture'
-import { db } from '@/lib/db'
+// import { db } from '@/lib/db'
 import { useUser } from '@clerk/nextjs'
 import { useGetUser } from '@/features/user/api/use-get-user'
+import { Loader2 } from 'lucide-react';
+import { useRemoveProfileImage } from '@/features/user/api/use-remove-profile-image';
+import { useUserUploadProfileImage } from '@/features/user/api/use-upload-profile-image';
+import { useUpdateUserProfile } from '@/features/user/api/use-update-user-profile';
 
 const Settings = () => {
   const { user: userClerk } = useUser();
+
   const userQuery = useGetUser(userClerk?.id || '');
+  const userImageRemoveMutation = useRemoveProfileImage(userClerk?.id || '');
+  const userImageUploadMutation = useUserUploadProfileImage(userClerk?.id || '');
+  const userUpdateMutation = useUpdateUserProfile(userClerk?.id || '');
   const user = userQuery.data;
-  console.log('userrrr', user);
-  // const authUser = await currentUser()
-  // if (!authUser) return null
 
-  // const authUser = {
-  //   id: '1',
-  //   clerkId: '1',
-  //   name: 'Andrew Lai',
-  //   email: 'andrew@example.com',
-  // }
-
-  // const user = await db.user.findUnique({ where: { clerkId: authUser.id } });
-  // const user = authUser;
+  const isLoading = userQuery.isPending || userQuery.isLoading;
   
   const removeProfileImage = async () => {
-    // 'use server'
-    // const response = await db.user.update({
-    //   where: {
-    //     clerkId: user?.clerkId,
-    //   },
-    //   data: {
-    //     profileImage: '',
-    //   },
-    // })
-    // return response
+    userImageRemoveMutation.mutate();
   }
 
   const uploadProfileImage = async (image: string) => {
-    // 'use server'
-    // console.log(image)
-    // const id = user?.clerkId
-    // const response = await db.user.update({
-    //   where: {
-    //     clerkId: id,
-    //   },
-    //   data: {
-    //     profileImage: image,
-    //   },
-    // })
-
-    // return response
+    userImageUploadMutation.mutate(image);
   }
 
   const updateUserInfo = async (name: string) => {
-    // 'use server'
-
-    // const updateUser = await db.user.update({
-    //   where: {
-    //     clerkId: user?.clerkId,
-    //   },
-    //   data: {
-    //     name,
-    //   },
-    // })
-    // return updateUser
+    userUpdateMutation.mutate(name);
   }
+
+  if (isLoading) return <div><Loader2 className="mr-2 h-4 w-4 animate-spin" /></div>
+
 
   return (
     <div className="flex flex-col gap-4">

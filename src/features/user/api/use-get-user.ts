@@ -14,9 +14,9 @@ export const useGetUser = (userClerkId: string) => {
         const error = await response.json();
         throw new Error(error.error || "Failed to fetch user");
       }
-
       return response.json();
     },
+    enabled: !!userClerkId,
   });
 
   return query;
