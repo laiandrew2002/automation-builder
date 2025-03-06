@@ -5,14 +5,11 @@ import { CONNECTIONS } from "@/lib/constant";
 import React from "react";
 import ConnectionCard from "./_components/ConnectionCard";
 import { useUser } from "@clerk/nextjs";
-// import { onDiscordConnect } from "./_actions/DiscordConnection";
-// import { onNotionConnect } from "./_actions/NotionConnection";
-// import { onSlackConnect } from "./_actions/SlackConnection";
-// import { getUserData } from "./_actions/GetUser";
 import { useConnectDiscordWebhook } from "@/features/discord/api/use-discord-connect";
 import { useGetUser } from "@/features/user/api/use-get-user";
 import { Loader2 } from "lucide-react";
 import { useConnectNotion } from "@/features/notion/api/use-notion-connect";
+import { useConnectSlack } from "@/features/slack/api/use-slack-connect";
 
 type Props = {
   searchParams: { [key: string]: string | undefined };
@@ -61,61 +58,42 @@ const Connections = (props: Props) => {
   const { user: userClerk } = useUser();
   const useDiscordConnection = useConnectDiscordWebhook();
   const useNotionConnection = useConnectNotion();
+  const useSlackConnection = useConnectSlack();
   const userQuery = useGetUser(userClerk?.id || '');
   const user = userQuery.data;
   const isLoading = userQuery.isPending || userQuery.isLoading;
   // if (!user) return null;
 
   const onUserConnections = async () => {
-    useDiscordConnection.mutate(
-      {
-        channel_id,
-        webhook_id,
-        webhook_name,
-        webhook_url,
-        user_id: user.id,
-        guild_name,
-        guild_id,
-      } as any);
+    useDiscordConnection.mutate({
+      channel_id,
+      webhook_id,
+      webhook_name,
+      webhook_url,
+      user_id: user.id,
+      guild_name,
+      guild_id,
+    } as any);
 
-      useNotionConnection.mutate(
-        {
-          access_token,
-          workspace_id,
-          workspace_icon,
-          workspace_name,
-          database_id,
-          id: user.id,
-        } as any);
-      
-    // await onDiscordConnect(
-    //   channel_id!,
-    //   webhook_id!,
-    //   webhook_name!,
-    //   webhook_url!,
-    //   user.id,
-    //   guild_name!,
-    //   guild_id!
-    // )
-    // await onNotionConnect(
-    //   access_token!,
-    //   workspace_id!,
-    //   workspace_icon!,
-    //   workspace_name!,
-    //   database_id!,
-    //   user.id
-    // )
-
-    // await onSlackConnect(
-    //   app_id!,
-    //   authed_user_id!,
-    //   authed_user_token!,
-    //   slack_access_token!,
-    //   bot_user_id!,
-    //   team_id!,
-    //   team_name!,
-    //   user.id
-    // )
+    useNotionConnection.mutate({
+      access_token,
+      workspace_id,
+      workspace_icon,
+      workspace_name,
+      database_id,
+      id: user.id,
+    } as any);
+    
+    useSlackConnection.mutate({
+      app_id,
+      authed_user_id,
+      authed_user_token,
+      slack_access_token,
+      bot_user_id,
+      team_id,
+      team_name,
+      user_id: user.id,
+    } as any);
 
     const connections: any = {}
 
