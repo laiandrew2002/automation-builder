@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     if (!notion_connected) {
       await db.notion.create({
         data: {
-          userId: id,
+          userId: String(id),
           workspaceIcon: workspace_icon!,
           accessToken: access_token,
           workspaceId: workspace_id!,
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
           databaseId: database_id,
           connections: {
             create: {
-              userId: id,
+              userId: String(id),
               type: 'Notion',
             },
           },

@@ -23,6 +23,7 @@ const ConnectionCard = ({
   callback,
   connected,
 }: Props) => {
+  console.log('connected', connected)
   return (
     <Card className="flex w-full items-center justify-between">
       <CardHeader className="flex flex-col gap-4">
@@ -41,7 +42,7 @@ const ConnectionCard = ({
         </div>
       </CardHeader>
       <div className="flex flex-col items-center gap-2 p-4">
-        {connected[type] ? (
+        {!!connected[type] ? (
           <div className="border-bg-primary rounded-lg border-2 px-3 py-2 font-bold">
             Connected
           </div>

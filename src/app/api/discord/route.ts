@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       webhook_id,
       webhook_name,
       webhook_url,
-      id,
+      user_id,
       guild_name,
       guild_id,
     } = body
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     // Check if webhook exists for the user
     const existingWebhook = await db.discordWebhook.findFirst({
-      where: { userId: id },
+      where: { userId: user_id },
       include: { connections: { select: { type: true } } },
     })
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     if (!existingWebhook) {
       await db.discordWebhook.create({
         data: {
-          userId: id,
+          userId: user_id,
           webhookId: webhook_id,
           channelId: channel_id!,
           guildId: guild_id!,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
           guildName: guild_name!,
           connections: {
             create: {
-              userId: id,
+              userId: user_id,
               type: 'Discord',
             },
           },
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     if (!existingChannelWebhook) {
       await db.discordWebhook.create({
         data: {
-          userId: id,
+          userId: user_id,
           webhookId: webhook_id,
           channelId: channel_id!,
           guildId: guild_id!,
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
           guildName: guild_name!,
           connections: {
             create: {
-              userId: id,
+              userId: user_id,
               type: 'Discord',
             },
           },

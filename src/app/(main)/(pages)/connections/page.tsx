@@ -2,8 +2,8 @@
 'use client'
 
 import { CONNECTIONS } from "@/lib/constant";
-import React from "react";
-import ConnectionCard from "./_components/ConnectionCard";
+import React, { useCallback, useEffect, useState } from "react";
+import ConnectionCard from "./_components/connection-card";
 import { useUser } from "@clerk/nextjs";
 import { useConnectDiscordWebhook } from "@/features/discord/api/use-discord-connect";
 import { useGetUser } from "@/features/user/api/use-get-user";
@@ -14,6 +14,7 @@ import { useConnectSlack } from "@/features/slack/api/use-slack-connect";
 type Props = {
   searchParams: { [key: string]: string | undefined };
 };
+
 const Connections = (props: Props) => {
   const {
     webhook_id,
@@ -54,64 +55,83 @@ const Connections = (props: Props) => {
     team_id: "",
     team_name: "",
   };
-
+  const [connections, setConnections] = useState<any>({
+    'Google Drive': false,
+    'Discord': false,
+    'Notion': false,
+    'Slack': false,
+  });
   const { user: userClerk } = useUser();
   const useDiscordConnection = useConnectDiscordWebhook();
   const useNotionConnection = useConnectNotion();
   const useSlackConnection = useConnectSlack();
   const userQuery = useGetUser(userClerk?.id || '');
   const user = userQuery.data;
+
   const isLoading = userQuery.isPending || userQuery.isLoading;
-  // if (!user) return null;
+  
+  const onUserConnections = useCallback(async () => {
+    if (!userClerk?.id) return;
 
-  const onUserConnections = async () => {
-    useDiscordConnection.mutate({
-      channel_id,
-      webhook_id,
-      webhook_name,
-      webhook_url,
-      user_id: user.id,
-      guild_name,
-      guild_id,
-    } as any);
+    useDiscordConnection.mutate(
+      {
+        channel_id,
+        webhook_id,
+        webhook_name,
+        webhook_url,
+        user_id: userClerk?.id,
+        guild_name,
+        guild_id,
+      } as any,
+      { onSuccess: () => userQuery.refetch() }
+    );
 
-    useNotionConnection.mutate({
-      access_token,
-      workspace_id,
-      workspace_icon,
-      workspace_name,
-      database_id,
-      id: user.id,
-    } as any);
+    useNotionConnection.mutate(
+      {
+        access_token,
+        workspace_id,
+        workspace_icon,
+        workspace_name,
+        database_id,
+        id: userClerk?.id,
+      } as any,
+      { onSuccess: () => userQuery.refetch() }
+    );
     
-    useSlackConnection.mutate({
-      app_id,
-      authed_user_id,
-      authed_user_token,
-      slack_access_token,
-      bot_user_id,
-      team_id,
-      team_name,
-      user_id: user.id,
-    } as any);
+    useSlackConnection.mutate(
+      {
+        app_id,
+        authed_user_id,
+        authed_user_token,
+        slack_access_token,
+        bot_user_id,
+        team_id,
+        team_name,
+        user_id: userClerk?.id,
+      } as any,
+      { onSuccess: () => userQuery.refetch() }
+    );
 
-    const connections: any = {}
-
-    // const user_info = await getUserData(user.id)
-    const user_info = user
+    const updatedConnections: Record<string, boolean> = {};
 
     //get user info with all connections
-    user_info?.connections.map((connection: { type: string | number; }) => {
-      connections[connection.type] = true
-      return (connections[connection.type] = true)
-    })
+    user?.connections?.forEach((connection: { type: string }) => {
+      updatedConnections[connection.type] = true;
+    });
 
+    console.log('connections', connections)
     // Google Drive connection will always be true
     // as it is given access during the login process
-    return { ...connections, 'Google Drive': true }
-  }
+    updatedConnections["Google Drive"] = true;
 
-  // const connections = await onUserConnections()
+    setConnections(updatedConnections);
+  }, [userClerk?.id, user?.connections]);
+
+  useEffect(() => {
+    if (user) {
+      onUserConnections();
+    }
+  }, [user, onUserConnections]);
 
   if (isLoading) return <div><Loader2 className="mr-2 h-4 w-4 animate-spin" /></div>
 
@@ -133,7 +153,7 @@ const Connections = (props: Props) => {
               icon={connection.image}
               type={connection.title}
               description={connection.description}
-              connected={onUserConnections}
+              connected={connections}
             />
           ))}
         </section>

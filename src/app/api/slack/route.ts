@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     if (!slackConnection) {
       await db.slack.create({
         data: {
-          userId: user_id,
+          userId: String(user_id),
           appId: app_id,
           authedUserId: authed_user_id,
           authedUserToken: authed_user_token,
