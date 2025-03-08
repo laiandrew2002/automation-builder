@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { ClerkProvider } from '@clerk/nextjs';
 import { QueryProvider } from "@/providers/query-provider";
 import { BillingProvider } from "@/providers/billing-provider";
+import { Toaster } from '@/components/ui/sonner'
+import ModalProvider from "@/providers/modal-provider";
 
 const font = DM_Sans({
   subsets: ["latin"],
@@ -35,9 +37,12 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <BillingProvider>
-              <QueryProvider>
-                {children}
-              </QueryProvider>
+              <ModalProvider>
+                <QueryProvider>
+                  {children}
+                  <Toaster />
+                </QueryProvider>
+              </ModalProvider>
             </BillingProvider>
           </ThemeProvider>
         </body>

@@ -1,5 +1,5 @@
 import Workflows from "./_components";
-// import WorkflowButton from "./_components/WorkflowButton";
+import WorkflowButton from "./_components/workflow-button";
 
 type Props = {};
 
@@ -8,7 +8,7 @@ const WorkflowsPage = (props: Props) => {
     <div className="flex flex-col gap-4 relative">
       <h1 className="text-4xl sticky top-0 z-[10] p-6 bg-background/50 backdrop-blur-lg flex items-center border-b justify-between">
         Workflows
-        {/* <WorkflowButton /> */}
+        <WorkflowButton />
       </h1>
       <div className="relative flex flex-col gap-4">
         <section className="grid text-muted-foreground">
